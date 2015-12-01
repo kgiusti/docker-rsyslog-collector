@@ -250,9 +250,8 @@ def onInit():
              "ERROR": logging.ERROR,
              "CRITICAL": logging.CRITICAL}.get(log_level,
                                                "WARNING")
-#    log_to_file = opts.get('log-to-file', '/dev/null')
-#    logging.basicConfig(filename=log_to_file, level=level)
-    logging.basicConfig(stream=sys.stdout, level=level)
+    log_to_file = opts.get('log-to-file', '/dev/null')
+    logging.basicConfig(filename=log_to_file, level=level)
 
     urls = opts.get('url', "amqp://localhost:5672")
     urls = [u.strip(' ') for u in urls.split(',')]
