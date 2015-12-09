@@ -251,7 +251,10 @@ def onInit():
              "CRITICAL": logging.CRITICAL}.get(log_level,
                                                "WARNING")
     log_to_file = opts.get('log-to-file', '/dev/null')
-    logging.basicConfig(filename=log_to_file, level=level)
+    if log_to_file == 'STDOUT':
+        logging.basicConfig(stream=sys.stdout, level=level)
+    else:
+        logging.basicConfig(filename=log_to_file, level=level)
 
     urls = opts.get('url', "amqp://localhost:5672")
     urls = [u.strip(' ') for u in urls.split(',')]
@@ -284,6 +287,14 @@ def onExit():
     if handler._thread.isAlive():
         logging.warning("Unable to kill Message Bus I/O thread")
 
+# This is problematic - the receiver expects a stream of single JSON
+# hashes, not a JSON array of JSON hashes
+def msgs_to_string(msgs):
+    rv = '['
+    for ii in msgs[:-1]:
+        rv += ii + ','
+    rv += msgs[-1] + ']'
+    return rv
 
 def onReceive(msgs):
     """Put a list of strings (JSON log output) into a message and hand it over
@@ -300,8 +311,14 @@ def onReceive(msgs):
             raise handler.exception
         raise RuntimeError("message bus I/O thread unexpectedly died")
 
-    pmsg = Message(body=msgs)
-    msg_queue.put(pmsg)
+#    pmsg = Message(body=msgs_to_string(msgs))
+#    msg_queue.put(pmsg)
+#    sys.stderr.write("omamqp wrote message [%s]\n" % str(pmsg.body))
+
+    # send each message as a single JSON formatted hash - if we need to so
+    # some sort of batching we'll have to figure that out later
+    for msg in msgs:
+        msg_queue.put(Message(body=msg))
     logging.debug("%s messages read", len(msgs))
     event_injector.trigger(event_msgs)
 
@@ -321,6 +338,7 @@ while keepRunning == 1:
         while keepRunning and sys.stdin in select.select([sys.stdin], [], [],
                                                          0)[0]:
             line = sys.stdin.readline()
+            logging.debug("omamqp1 read line [%s]" % line)
             if line:
                 msgs.append(line.rstrip('\n\r'))
                 msgsInBatch = msgsInBatch + 1
