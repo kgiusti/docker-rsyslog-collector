@@ -10,9 +10,9 @@ ENV HOME=/opt/app-root/src \
     AMQP_PORT=5672
 
 RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm && \
-    curl https://copr.fedoraproject.org/coprs/rmeggins/rsyslog/repo/epel-7/rmeggins-rsyslog-epel-7.repo > /etc/yum.repos.d/rmeggins-rsyslog-epel-7.repo && \
+    curl https://copr.fedorainfracloud.org/coprs/rmeggins/rsyslog/repo/epel-7/rmeggins-rsyslog-epel-7.repo > /etc/yum.repos.d/rmeggins-rsyslog-epel-7.repo && \
     yum install -y rsyslog rsyslog-gssapi qpid-proton-c \
-    rsyslog-mmjsonparse rsyslog-mmsnmptrapd rsyslog-debuginfo gdb && \
+    rsyslog-mmjsonparse rsyslog-mmsnmptrapd && \
     yum clean all
 
 ADD rsyslog.conf /etc/rsyslog.conf
