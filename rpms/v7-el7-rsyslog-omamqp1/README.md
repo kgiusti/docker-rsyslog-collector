@@ -1,20 +1,19 @@
-= How to use this spec file =
+# How to use this spec file
 
-# Grab the el7 version of the rsyslog spec and sources::
+Grab the el7 version of the rsyslog spec and sources::
 
     $ wget http://vault.centos.org/centos/7/os/Source/SPackages/rsyslog-7.4.7-12.el7.src.rpm
     $ rpm2cpio rsyslog-7.4.7-12.el7.src.rpm | cpio -id
     $ builddir=`pwd`
 
-# Create the rsyslog-omamqp1.tar.gz file containing only the plugin source code
-
+Create the rsyslog-omamqp1.tar.gz file containing only the plugin source code.
 For example, if you have a local git repo with the source code in
 $HOME/rsyslog::
 
     $ cd $HOME/rsyslog
     $ tar cfz $builddir/rsyslog-omamqp1.tar.gz plugins/omamqp1
 
-# Build the rsyslog-omamqp1 srpm with the spec file::
+Build the rsyslog-omamqp1 srpm with the spec file::
 
     $ rpmbuild --define '_topdir .' --define '_sourcedir .' \
         --define 'dist .el7' -bs rsyslog-omamqp1.spec
