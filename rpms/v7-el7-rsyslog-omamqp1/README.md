@@ -11,6 +11,8 @@ For example, if you have a local git repo with the source code in
 $HOME/rsyslog::
 
     $ cd $HOME/rsyslog
+    $ git clean
+    $ autoreconf -fvi
     $ tar cfz $builddir/rsyslog-omamqp1.tar.gz plugins/omamqp1
 
 Build the rsyslog-omamqp1 srpm with the spec file::
